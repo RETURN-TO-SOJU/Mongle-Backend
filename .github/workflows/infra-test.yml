@@ -55,7 +55,7 @@ jobs:
         
     - name: SSH Remote Commands
       run: |
-        ssh -o ProxyCommand="ssh -W %h:%p ec2-user@${{ secrets.BASTION_IP }} -i ./mongle-pubilc.pem" -i ./mongle-private.pem ec2-user@${{ secrets.DEV_SERVER_IP }}
+        sudo ssh -t -t -o ProxyCommand="ssh -W %h:%p ec2-user@${{ secrets.BASTION_IP }} -i ./mongle-pubilc.pem" -i ./mongle-private.pem ec2-user@${{ secrets.DEV_SERVER_IP }}
         echo "hi"
     
 #     - name: SSH Remote Commands
