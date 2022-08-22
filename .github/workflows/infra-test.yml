@@ -49,9 +49,9 @@ jobs:
     - name: make pem key
       run: |
         touch ./mongle-pubilc.pem
-        ehco "${{ secrets.PUBLIC_PEM_KEY }}" > ./mongle-pubilc.pem
+        echo "${{ secrets.PUBLIC_PEM_KEY }}" > ./mongle-pubilc.pem
         touch ./mongle-private.pem
-        ehco "${{ secrets.PRIVATE_PEM_KEY }}" > ./mongle-pubilc.pem
+        echo "${{ secrets.PRIVATE_PEM_KEY }}" > ./mongle-pubilc.pem
         
     - name: SSH Remote Commands
       run: |
