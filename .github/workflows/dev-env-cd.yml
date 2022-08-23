@@ -33,14 +33,7 @@ jobs:
         mkdir resources
         cd ./resources
         touch ./application.properties
-        echo "${{ secrets.PROPERTIES }}" > ./application.properties
-      shell: bash    
- 
-    - name: make main properties-dev
-      run: |
-        cd ./src/main/resources
-        touch ./application-dev.properties
-        echo "${{ secrets.PROPERTIES_DEV }}" > ./application-dev.properties
+        echo "${{ secrets.PROPERTIES_SETTING_FOR_DEV }}" > ./application.properties
       shell: bash    
       
     - name: make test properties
@@ -75,7 +68,7 @@ jobs:
         docker push ${{ secrets.DOCKER_ID }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
         
     - name: SSH proxy command
-      uses: appleboy/ssh-action@mster
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEV_SERVER_IP }}
         username: ec2-user
