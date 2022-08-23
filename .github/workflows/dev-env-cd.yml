@@ -9,7 +9,7 @@ name: Java CD with Gradle, Docker, Aws
 
 on:
   push:
-    branches: [ "prod" ]
+    branches: [ "infra-test" ]
 
 permissions:
   contents: read
@@ -29,10 +29,39 @@ jobs:
         
     - name: make main properties
       run: |
-        cd ./src/main/resources
+        cd ./src/main
+        mkdir resources
+        cd ./resources
         touch ./application.properties
         echo "${{ secrets.PROPERTIES }}" > ./application.properties
       shell: bash    
+ 
+    - name: make main properties-dev
+      run: |
+        cd ./src/main/resources
+        touch ./application-dev.properties
+        echo "${{ secrets.PROPERTIES_DEV }}" > ./application-dev.properties
+      shell: bash    
+      
+    - name: make test properties
+      run: |
+        cd ./src/test
+        mkdir resources
+        cd ./resources
+        touch ./application.properties
+        echo "${{ secrets.TEST_PROPERTIES }}" > ./application.properties
+      shell: bash    
+  
+    - name: make test fcm json
+      run: |
+        cd ./src/test/resources
+        mkdir firebase
+        cd ./firebase
+        touch ./monglemongle-firebase-adminsdk-zrey9-3a66b2259a.json
+        echo "${{ secrets.FIREBASE_JSON }}" > ./monglemongle-firebase-adminsdk-zrey9-3a66b2259a.json
+      shell: bash    
+ 
+      
     
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -45,12 +74,15 @@ jobs:
         docker build -t ${{ secrets.DOCKER_ID }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7} .
         docker push ${{ secrets.DOCKER_ID }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
         
-    - name: SSH Remote Commands
-      uses: appleboy/ssh-action@v0.1.4
+    - name: SSH proxy command
+      uses: appleboy/ssh-action@mster
       with:
-        host: ${{ secrets.SERVER_HOST }}
+        host: ${{ secrets.DEV_SERVER_IP }}
         username: ec2-user
-        key: ${{ secrets.SERVER_KEY }}
+        key: ${{ secrets.PRIVATE_PEM_KEY }}
+        proxy_host: ${{ secrets.BASTION_IP }} 
+        proxy_username: ec2-user
+        proxy_key: ${{ secrets.PUBLIC_PEM_KEY }}
         envs: GITHUB_SHA
         script: |
           docker pull ${{ secrets.DOCKER_ID }}/${{ secrets.DOCKER_REPOSITORY }}:${GITHUB_SHA::7}
