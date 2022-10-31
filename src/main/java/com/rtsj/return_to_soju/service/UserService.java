@@ -88,4 +88,12 @@ public class UserService {
         user.setFcmToken(fcmToken);
         return;
     }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        userRepository.delete(user);
+
+        return;
+    }
 }

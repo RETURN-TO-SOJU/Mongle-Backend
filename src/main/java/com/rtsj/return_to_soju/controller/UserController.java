@@ -118,6 +118,14 @@ public class UserController {
         return ResponseEntity.ok().body(b);
     }
 
+    @DeleteMapping("/users")
+    public ResponseEntity leaveMongle(HttpServletRequest request) {
+        Long userId = jwtProvider.getUserIdByHeader(request);
+        userService.deleteUser(userId);
+
+        return ResponseEntity.status(204).body(null);
+    }
+
     /**
      * 로그인 요청시마다 client가 귀찮을 수도 있으니, 기존 refresh로 access 만료되면 받아서 사용하기
      */
@@ -134,4 +142,6 @@ public class UserController {
         log.info("선물하기 테스트");
         firebaseCloudMessageService.sendMessageListWithToken(allFcmToken, "몽글몽글", "행복한 기억이 도착했어요");
     }
+
+
 }
