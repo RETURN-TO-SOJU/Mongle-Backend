@@ -39,12 +39,11 @@ public class FirebaseCloudMessageService{
     private final UserService userService;
     public void sendMessageListWithToken(List<String> fcmTokenList, String title, String body){
         List<Message> messages = fcmTokenList.stream().map(
-                token -> Message.builder()
-                        .putData("type","gift")
-                        .putData("date", userService.getUserMemoryDateByFcmToken(token))
-                        .setNotification(new Notification(title, body))
-                        .setToken(token)
-                        .build())
+                token -> FcmMessage.Message.builder()
+                        .token(token)
+                        .data(new FcmTypeAndData(title, body, "gift", userService.getUserMemoryDateByFcmToken(token)))
+                        .build()
+                        .toFirebaseMessage())
                 .collect(Collectors.toList());
         BatchResponse response;
         try{
